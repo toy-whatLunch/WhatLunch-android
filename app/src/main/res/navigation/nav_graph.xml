@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.sungbin.whatlunch_android.ui.join.LoginFragment"
+        android:name="com.sungbin.whatlunch_android.ui.login.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" />
 
