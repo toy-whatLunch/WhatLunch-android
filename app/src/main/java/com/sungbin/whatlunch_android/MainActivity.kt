@@ -1,13 +1,16 @@
 package com.sungbin.whatlunch_android
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import com.sungbin.whatlunch_android.base.HiltBaseActivity
 import com.sungbin.whatlunch_android.databinding.ActivityMainBinding
+import com.sungbin.whatlunch_android.util.Token
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,6 +48,7 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>() {
     private fun initPage(isLogin: Boolean){
         val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
 //        if(FirebaseAuth.getInstance().currenUser!= null)
+        Log.d("파이어베이스 유저", firebaseAuth.currentUser.toString())
         if(isLogin){
             navGraph.setStartDestination(R.id.homeFragment)
         }else{
@@ -52,4 +56,5 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>() {
         }
         navController.setGraph(navGraph, null)
     }
+
 }

@@ -58,8 +58,8 @@ android {
 dependencies {
     implementation files('libs/libDaumMapAndroid.jar')
 
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
@@ -69,9 +69,14 @@ dependencies {
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:31.2.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
-    // Firebase auth
+    // Firebase - 인증
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
     implementation 'com.google.firebase:firebase-auth-ktx'
+    // Firebase Messaging
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.1.1'
+
+    // 알 수 없는 워닝 제거용
+    implementation 'com.google.android.gms:play-services-basement:18.1.0'
 
     // Navigation - kotlin
     def nav_version = "2.5.3"
