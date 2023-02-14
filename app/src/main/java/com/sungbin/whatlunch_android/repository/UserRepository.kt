@@ -1,5 +1,9 @@
 package com.sungbin.whatlunch_android.repository
 
+import android.content.Context
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.user.UserApiClient
+import com.kakao.sdk.user.model.User
 import com.sungbin.whatlunch_android.network.api.NetworkService
 import com.sungbin.whatlunch_android.network.data.BasicData
 import com.sungbin.whatlunch_android.network.data.LoginData
@@ -30,4 +34,20 @@ class UserRepository @Inject constructor(private val networkService: NetworkServ
 
         return result
     }
+
+    suspend fun requestIsKakaoTalk(context: Context): Boolean =
+        UserApiClient.instance.isKakaoTalkLoginAvailable(context)
+
+    suspend fun requestKakaoTalkLogin(
+        context: Context,
+        callback: (token: OAuthToken?, error: Throwable?) -> Unit
+    ) = UserApiClient.instance.loginWithKakaoTalk(context, callback = callback)
+
+    suspend fun requestKakaoWebLogin(
+        context: Context,
+        callback: (token: OAuthToken?, error: Throwable?) -> Unit
+    ) = UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
+
+    suspend fun getKakaoProfile(callback: (user: User?, error: Throwable?) -> Unit) =
+        UserApiClient.instance.me(callback = callback)
 }

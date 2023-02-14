@@ -11,6 +11,7 @@ import com.sungbin.whatlunch_android.R
 import com.sungbin.whatlunch_android.base.HiltBaseFragment
 import com.sungbin.whatlunch_android.databinding.FragmentLoginBinding
 import com.sungbin.whatlunch_android.network.data.LoginData
+import com.sungbin.whatlunch_android.util.LOG_TAG
 import com.sungbin.whatlunch_android.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -27,11 +28,15 @@ class LoginFragment : HiltBaseFragment<FragmentLoginBinding, LoginViewModel, Nav
     private lateinit var firebaseAuth: FirebaseAuth
 
     override fun initView(saveInstanceState: Bundle?) {
+        firebaseAuth = FirebaseAuth.getInstance()
+
         binding.kakaoLoginBtn.setOnClickListener {
-            viewModel.socialLogin(LoginData("", "", "", ""))
+            kakaoLogin()
         }
 
-        firebaseAuth = FirebaseAuth.getInstance()
+        binding.logoutBtn.setOnClickListener {
+            firebaseAuth.currentUser?.delete()
+        }
 
     }
 
@@ -57,6 +62,25 @@ class LoginFragment : HiltBaseFragment<FragmentLoginBinding, LoginViewModel, Nav
 
     override fun initAfterBinding() {
 
+    }
+
+    /**
+     * 카카오 로그인
+     */
+    private fun kakaoLogin() {
+        viewModel.kakaoTalkLogin(requireActivity(), {
+            viewModel.getKakaoUserProfile({ user ->
+                // 이메일과 닉네임은 필수 동의
+                Log.d(LOG_TAG,"이메일 : ${user.kakaoAccount?.email!!}")
+                Log.d(LOG_TAG,"닉네임 : ${user.kakaoAccount!!.profile?.nickname!!}")
+                Log.d(LOG_TAG,"프로바이더  : kakao")
+                Log.d(LOG_TAG, "uid : ${user.id}")
+                val data = LoginData(user.kakaoAccount?.email!!, user.kakaoAccount!!.profile?.nickname!!, "kakao", "${user.id}")
+                viewModel.socialLogin(data)
+            },
+                {Log.e(LOG_TAG, "카카오 로그인 실패")})
+        },
+            {Log.e(LOG_TAG, "카카오 로그인 실패")})
     }
 
     /**

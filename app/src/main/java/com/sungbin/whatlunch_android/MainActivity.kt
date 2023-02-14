@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.messaging.FirebaseMessaging
 import com.sungbin.whatlunch_android.base.HiltBaseActivity
 import com.sungbin.whatlunch_android.databinding.ActivityMainBinding
@@ -34,7 +35,7 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>() {
 
         firebaseAuth = FirebaseAuth.getInstance()
 
-        initPage(false)
+//        initPage(firebaseAuth.currentUser)
     }
 
     override fun initDataBinding() {
@@ -45,11 +46,9 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>() {
 
     }
 
-    private fun initPage(isLogin: Boolean){
+    private fun initPage(firebaseUser: FirebaseUser?){
         val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
-//        if(FirebaseAuth.getInstance().currenUser!= null)
-        Log.d("파이어베이스 유저", firebaseAuth.currentUser.toString())
-        if(isLogin){
+        if(firebaseUser != null){
             navGraph.setStartDestination(R.id.homeFragment)
         }else{
             navGraph.setStartDestination(R.id.loginFragment)
