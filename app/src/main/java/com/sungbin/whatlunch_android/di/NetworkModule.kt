@@ -2,6 +2,7 @@ package com.sungbin.whatlunch_android.di
 
 import com.sungbin.whatlunch_android.BuildConfig
 import com.sungbin.whatlunch_android.network.api.NetworkService
+import com.sungbin.whatlunch_android.network.interceptor.NetworkInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,6 +29,7 @@ object NetworkModule {
     fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient{
         return OkHttpClient.Builder()
             .addNetworkInterceptor(httpLoggingInterceptor)
+            .addInterceptor(NetworkInterceptor())
             .build()
     }
 

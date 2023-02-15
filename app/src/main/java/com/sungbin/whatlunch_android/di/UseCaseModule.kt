@@ -11,9 +11,13 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object UseCaseModule {
     @Provides
-    fun provideRequestFirebaseTokenUseCase(repository: UserRepository) =
-        PostSocialLoginUseCase(repository)
+    fun provideRequestFirebaseTokenUseCase(repo: UserRepository) = PostSocialLoginUseCase(repo)
 
+    @Provides
+    fun provideUpdateFcmTokenUseCase(repo: UserRepository) = PutFcmTokenUseCase(repo)
+
+    @Provides
+    fun provideGetUserUseCase(repo: UserRepository) = GetUserUseCase(repo)
     // login
     @Provides
     fun provideIsKakaoTalkUseCase(repo: UserRepository) = IsKakaoTalkUseCase(repo)

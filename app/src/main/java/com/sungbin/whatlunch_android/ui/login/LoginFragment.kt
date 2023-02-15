@@ -2,9 +2,13 @@ package com.sungbin.whatlunch_android.ui.login
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavArgs
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.firebase.auth.FirebaseAuth
 import com.sungbin.whatlunch_android.R
@@ -14,10 +18,6 @@ import com.sungbin.whatlunch_android.network.data.LoginData
 import com.sungbin.whatlunch_android.util.LOG_TAG
 import com.sungbin.whatlunch_android.util.UiState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 @AndroidEntryPoint
 class LoginFragment : HiltBaseFragment<FragmentLoginBinding, LoginViewModel, NavArgs>() {
@@ -33,11 +33,6 @@ class LoginFragment : HiltBaseFragment<FragmentLoginBinding, LoginViewModel, Nav
         binding.kakaoLoginBtn.setOnClickListener {
             kakaoLogin()
         }
-
-        binding.logoutBtn.setOnClickListener {
-            firebaseAuth.currentUser?.delete()
-        }
-
     }
 
     override fun initDataBinding() {
@@ -90,16 +85,32 @@ class LoginFragment : HiltBaseFragment<FragmentLoginBinding, LoginViewModel, Nav
         firebaseAuth.signInWithCustomToken(customToken)
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
-                    Log.d("파이어베이스", "성공")
-//                    updateUI(firebaseAuth.currentUser)
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val token: String? = firebaseAuth.currentUser?.getIdToken(false)?.await()?.token
-                        Log.d("파이어베이스 토큰", token.toString())
-                    }
+                    Log.d(LOG_TAG, "파이어베이스 토큰 등록 성공")
+                    val action = LoginFragmentDirections.actionLoginFragmentToHomeFragment()
+                    findNavController().navigate(action)
                 } else {
-//                    updateUI()
+                    Log.d(LOG_TAG, "파이어베이스 토큰 등록 실패")
                 }
             }
+    }
+
+    private lateinit var backPressedDispatcher: OnBackPressedDispatcher
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            requireActivity().finish()
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callback.remove()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        callback.isEnabled = true
+        backPressedDispatcher = requireActivity().onBackPressedDispatcher
+        backPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
 }

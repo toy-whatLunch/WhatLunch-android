@@ -6,8 +6,16 @@ import com.kakao.sdk.user.model.User
 import com.sungbin.whatlunch_android.network.data.LoginData
 import com.sungbin.whatlunch_android.repository.UserRepository
 
-class PostSocialLoginUseCase(private val repository: UserRepository) {
-    suspend operator fun invoke(loginData: LoginData) = repository.requestFireBaseToken(loginData)
+class PostSocialLoginUseCase(private val repo: UserRepository) {
+    suspend operator fun invoke(loginData: LoginData) = repo.requestFireBaseToken(loginData)
+}
+
+class PutFcmTokenUseCase(private val repo: UserRepository){
+    suspend operator fun invoke(fcmToken: String) = repo.updateFcmToken(fcmToken)
+}
+
+class GetUserUseCase(private val repo: UserRepository){
+    suspend operator fun invoke() = repo.getUser()
 }
 
 class IsKakaoTalkUseCase(private val repo: UserRepository) {

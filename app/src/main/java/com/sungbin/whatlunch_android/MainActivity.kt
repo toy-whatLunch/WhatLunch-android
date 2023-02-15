@@ -35,7 +35,9 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>() {
 
         firebaseAuth = FirebaseAuth.getInstance()
 
-//        initPage(firebaseAuth.currentUser)
+        setPush()
+
+        initPage(firebaseAuth.currentUser)
     }
 
     override fun initDataBinding() {
@@ -44,6 +46,14 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>() {
 
     override fun initAfterBinding() {
 
+    }
+
+    /**
+     * push 초기 설정
+     */
+    private fun setPush() {
+        FirebaseMessaging.getInstance().isAutoInitEnabled = true
+        Token.register()
     }
 
     private fun initPage(firebaseUser: FirebaseUser?){

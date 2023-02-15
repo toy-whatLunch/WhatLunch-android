@@ -1,60 +1,87 @@
 package com.sungbin.whatlunch_android.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
+import androidx.navigation.NavArgs
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.sungbin.whatlunch_android.R
+import com.sungbin.whatlunch_android.base.HiltBaseFragment
+import com.sungbin.whatlunch_android.databinding.FragmentHomeBinding
+import com.sungbin.whatlunch_android.util.UiState
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+@AndroidEntryPoint
+class HomeFragment : HiltBaseFragment<FragmentHomeBinding, HomeViewModel, NavArgs>() {
+    override val layoutId: Int = R.layout.fragment_home
+    override val viewModel: HomeViewModel by viewModels()
+    override val navArgs: NavArgs by navArgs()
 
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var firebaseAuth: FirebaseAuth
+    override fun initView(saveInstanceState: Bundle?) {
+        firebaseAuth = FirebaseAuth.getInstance()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        binding.logoutBtn.setOnClickListener {
+            Firebase.auth.signOut()
+            val action = HomeFragmentDirections.actionHomeFragmentToLoginFragment()
+            findNavController().navigate(action)
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun initDataBinding() {
+        viewModel.user.asLiveData().observe(viewLifecycleOwner){
+            when (it) {
+                is UiState.Loading -> {
+                    Log.d("UiState", "로딩")
+                }
+                is UiState.Empty -> {
+                    Log.d("UiState", "상태 무")
+                }
+                is UiState.Success -> {
+                    viewModel.registerFcmToken(it.data.deviceInfo?.fcmToken)
+                    Log.d("UiState", "데이터받음")
+                }
+                is UiState.Error -> {
+                    Log.d("UiState", "에러 ${it.message}")
                 }
             }
+        }
     }
+
+    override fun initAfterBinding() {
+        viewModel.getUser()
+    }
+
+    private lateinit var backPressedDispatcher: OnBackPressedDispatcher
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+           requireActivity().finish()
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callback.remove()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        callback.isEnabled = true
+        backPressedDispatcher = requireActivity().onBackPressedDispatcher
+        backPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
 }

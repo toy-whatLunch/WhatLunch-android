@@ -29,10 +29,27 @@ class UserRepository @Inject constructor(private val networkService: NetworkServ
     suspend fun requestFireBaseToken(loginData: LoginData): BasicData? {
         val result = call(
             call = { networkService.requestToken(data = loginData) },
-            error = "http get user error"
+            error = "http FireBaseToken error"
         )
 
         return result
+    }
+
+    suspend fun updateFcmToken(fcmToken: String): BasicData? {
+        val result = call(
+            call = { networkService.updateFcmToken(fcmToken) },
+            error = "http updateFcmToken error"
+        )
+
+        return result
+    }
+
+    suspend fun getUser(): BasicData? {
+
+        return call(
+            call = { networkService.getUser() },
+            error = "http get user error"
+        )
     }
 
     suspend fun requestIsKakaoTalk(context: Context): Boolean =
