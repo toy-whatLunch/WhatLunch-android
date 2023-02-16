@@ -1,21 +1,28 @@
 package com.sungbin.whatlunch_android
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.location.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.messaging.FirebaseMessaging
 import com.sungbin.whatlunch_android.base.HiltBaseActivity
 import com.sungbin.whatlunch_android.databinding.ActivityMainBinding
+import com.sungbin.whatlunch_android.util.LOG_TAG
 import com.sungbin.whatlunch_android.util.Token
+import com.sungbin.whatlunch_android.util.Util
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>() {
+class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>(){
     override val layoutId: Int = R.layout.activity_main
     override val viewModel: MainViewModel by viewModels()
 
@@ -36,7 +43,6 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>() {
         firebaseAuth = FirebaseAuth.getInstance()
 
         setPush()
-
         initPage(firebaseAuth.currentUser)
     }
 
@@ -56,6 +62,9 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>() {
         Token.register()
     }
 
+    /**
+     * 파이어베이스 유저 정보 있으면 곧 바로 로그인
+     */
     private fun initPage(firebaseUser: FirebaseUser?){
         val navGraph = navController.navInflater.inflate(R.navigation.nav_graph)
         if(firebaseUser != null){
@@ -65,5 +74,4 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>() {
         }
         navController.setGraph(navGraph, null)
     }
-
 }

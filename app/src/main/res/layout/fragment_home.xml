@@ -12,6 +12,16 @@
         android:layout_height="match_parent">
 
         <Button
+            android:id="@+id/map_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:text="맵"
+            app:layout_constraintBottom_toTopOf="@+id/logout_btn"
+            app:layout_constraintEnd_toEndOf="@+id/logout_btn"
+            app:layout_constraintStart_toStartOf="@+id/logout_btn" />
+
+        <Button
             android:id="@+id/logout_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

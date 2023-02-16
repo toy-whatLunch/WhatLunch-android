@@ -39,6 +39,10 @@ class HomeFragment : HiltBaseFragment<FragmentHomeBinding, HomeViewModel, NavArg
             val action = HomeFragmentDirections.actionHomeFragmentToLoginFragment()
             findNavController().navigate(action)
         }
+        binding.mapBtn.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToMapFragment()
+            findNavController().navigate(action)
+        }
     }
 
     override fun initDataBinding() {
