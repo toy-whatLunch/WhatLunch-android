@@ -17,9 +17,14 @@ import com.sungbin.whatlunch_android.databinding.FragmentMapBinding
 import com.sungbin.whatlunch_android.util.LOG_TAG
 import com.sungbin.whatlunch_android.util.Util
 import dagger.hilt.android.AndroidEntryPoint
+import net.daum.android.map.MapViewEventListener
+import net.daum.mf.map.api.MapPOIItem
+import net.daum.mf.map.api.MapPoint
+import net.daum.mf.map.api.MapView
+import net.daum.mf.map.api.MapView.POIItemEventListener
 
 @AndroidEntryPoint
-class MapFragment : HiltBaseFragment<FragmentMapBinding, MapViewModel, NavArgs>() {
+class MapFragment : HiltBaseFragment<FragmentMapBinding, MapViewModel, NavArgs>(), MapViewEventListener {
     override val layoutId: Int = R.layout.fragment_map
     override val viewModel: MapViewModel by viewModels()
     override val navArgs: NavArgs by navArgs()
@@ -32,10 +37,17 @@ class MapFragment : HiltBaseFragment<FragmentMapBinding, MapViewModel, NavArgs>(
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
 
+    private val mapView by lazy { MapView(requireActivity()) }
     override fun initView(saveInstanceState: Bundle?) {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
             .build()
+
+        binding.mapView.addView(mapView)
+        mapView.mapViewEventListener = this
+        mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
+
+        getLastLocation()
 
         binding.locationBtn.setOnClickListener {
             checkLocation()
@@ -47,6 +59,21 @@ class MapFragment : HiltBaseFragment<FragmentMapBinding, MapViewModel, NavArgs>(
 
     override fun initAfterBinding() {
 
+    }
+
+    private fun setMapCenterPoint(lat: Double, lon: Double){
+        mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(lat, lon), true)
+
+        val marker = MapPOIItem()
+        val mapPoint = MapPoint.mapPointWithGeoCoord(lat, lon)
+        marker.apply {
+            itemName = "현재 위치"
+            tag = 0
+            setMapPoint(mapPoint)
+            markerType = MapPOIItem.MarkerType.BluePin
+            selectedMarkerType = MapPOIItem.MarkerType.RedPin
+        }
+        mapView.addPOIItem(marker)
     }
 
     /**
@@ -85,6 +112,9 @@ class MapFragment : HiltBaseFragment<FragmentMapBinding, MapViewModel, NavArgs>(
                     binding.latitudeText.text = latitude.toString()
                     binding.longitudeText.text = longitude.toString()
                     removeLocation() // 위치를 한번 받은 후 remove()
+
+                    viewModel.getSearchCategory(longitude, latitude)
+                    setMapCenterPoint(lat = latitude, lon = longitude)
                 }
             }
         }
@@ -106,7 +136,15 @@ class MapFragment : HiltBaseFragment<FragmentMapBinding, MapViewModel, NavArgs>(
             if (location != null) {
                 val latitude = location.latitude
                 val longitude = location.longitude
+                setMapCenterPoint(lat = latitude, lon = longitude)
             }
         }
+        fusedLocationProviderClient.lastLocation.addOnFailureListener {
+            checkLocation()
+        }
+    }
+
+    override fun onLoadMapView() {
+       Log.d(LOG_TAG, "맵뷰등장")
     }
 }

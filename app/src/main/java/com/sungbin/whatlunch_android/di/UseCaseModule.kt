@@ -1,5 +1,6 @@
 package com.sungbin.whatlunch_android.di
 
+import com.sungbin.whatlunch_android.repository.SearchRepository
 import com.sungbin.whatlunch_android.repository.UserRepository
 import com.sungbin.whatlunch_android.usecase.*
 import dagger.Module
@@ -30,4 +31,8 @@ object UseCaseModule {
 
     @Provides
     fun provideGetKakaoUserProfileUseCase(repo: UserRepository) = GetKakaoUserProfileUseCase(repo)
+
+    // kakao
+    @Provides
+    fun provideGetSearchCategoryUseCase(repo: SearchRepository) = GetSearchCategoryUseCase(repo)
 }

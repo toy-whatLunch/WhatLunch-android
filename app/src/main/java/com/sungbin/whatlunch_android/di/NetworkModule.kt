@@ -1,6 +1,7 @@
 package com.sungbin.whatlunch_android.di
 
 import com.sungbin.whatlunch_android.BuildConfig
+import com.sungbin.whatlunch_android.network.api.KakaoLocalService
 import com.sungbin.whatlunch_android.network.api.NetworkService
 import com.sungbin.whatlunch_android.network.interceptor.NetworkInterceptor
 import dagger.Module
@@ -11,11 +12,18 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    @Qualifier
+    annotation class WhatLunch
+
+    @Qualifier
+    annotation class Kakao
+
     @Provides
     @Singleton
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor{
@@ -26,6 +34,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @WhatLunch
     fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient{
         return OkHttpClient.Builder()
             .addNetworkInterceptor(httpLoggingInterceptor)
@@ -41,8 +50,9 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @WhatLunch
     fun provideRetrofit(
-        okHttpClient: OkHttpClient,
+        @WhatLunch okHttpClient: OkHttpClient,
         gsonConverterFactory: GsonConverterFactory
     ): Retrofit =
         Retrofit.Builder()
@@ -53,8 +63,37 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideNetworkService(retrofit: Retrofit): NetworkService{
+    fun provideNetworkService(@WhatLunch retrofit: Retrofit): NetworkService{
         return retrofit.create(NetworkService::class.java)
+    }
+
+    //kakao
+    @Provides
+    @Singleton
+    @Kakao
+    fun provideKakaoOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient{
+        return OkHttpClient.Builder()
+            .addNetworkInterceptor(httpLoggingInterceptor)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    @Kakao
+    fun provideKakaoRetrofit(
+        @Kakao kakaoOkHttpClient: OkHttpClient,
+        gsonConverterFactory: GsonConverterFactory
+    ): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.KAKAO_BASE_URL)
+            .client(kakaoOkHttpClient)
+            .addConverterFactory(gsonConverterFactory)
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideKakaoService(@Kakao kakaoRetrofit: Retrofit): KakaoLocalService{
+        return kakaoRetrofit.create(KakaoLocalService::class.java)
     }
 
 }
