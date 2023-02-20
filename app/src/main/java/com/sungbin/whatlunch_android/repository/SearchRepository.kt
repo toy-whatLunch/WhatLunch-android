@@ -1,12 +1,12 @@
 package com.sungbin.whatlunch_android.repository
 
-import com.sungbin.whatlunch_android.network.api.KakaoLocalService
+import com.sungbin.whatlunch_android.network.api.KakaoSearchService
 import com.sungbin.whatlunch_android.network.data.KakaoData
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SearchRepository @Inject constructor(private val kakaoService: KakaoLocalService) :
+class SearchRepository @Inject constructor(private val kakaoService: KakaoSearchService) :
     BaseRepository() {
 
     suspend fun getSearchKeyword() {

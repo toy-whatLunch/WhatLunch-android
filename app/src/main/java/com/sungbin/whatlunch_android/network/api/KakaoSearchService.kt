@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
 
-interface KakaoLocalService {
+interface KakaoSearchService {
     @GET("v2/local/search/keyword.json")
     suspend fun getSearchKeyword(
         @Query("query") query: String,
@@ -15,7 +15,7 @@ interface KakaoLocalService {
         @Query("y") lat: String,
         @Query("page") page: Int? = 1,
         @Query("radius") radius: Int? = 20000,
-        @Query("size") size: Int? = 45)
+        @Query("size") size: Int? = 15)
     : Response<KakaoData>
 
     @GET("v2/local/search/category.json")
@@ -25,7 +25,7 @@ interface KakaoLocalService {
         @Query("x") lon: String,
         @Query("y") lat: String,
         @Query("page") page: Int? = 1,
-        @Query("radius") radius: Int? = 2000,
+        @Query("radius") radius: Int? = 1000,
         @Query("size") size: Int? = 15)
             : Response<KakaoData>
 }

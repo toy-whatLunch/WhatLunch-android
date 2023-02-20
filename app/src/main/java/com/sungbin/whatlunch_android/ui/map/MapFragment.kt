@@ -8,6 +8,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.asLiveData
 import androidx.navigation.NavArgs
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.location.*
@@ -15,6 +16,7 @@ import com.sungbin.whatlunch_android.R
 import com.sungbin.whatlunch_android.base.HiltBaseFragment
 import com.sungbin.whatlunch_android.databinding.FragmentMapBinding
 import com.sungbin.whatlunch_android.util.LOG_TAG
+import com.sungbin.whatlunch_android.util.UiState
 import com.sungbin.whatlunch_android.util.Util
 import dagger.hilt.android.AndroidEntryPoint
 import net.daum.android.map.MapViewEventListener
@@ -55,19 +57,38 @@ class MapFragment : HiltBaseFragment<FragmentMapBinding, MapViewModel, NavArgs>(
     }
 
     override fun initDataBinding() {
+        viewModel.kakaoData.asLiveData().observe(viewLifecycleOwner){
+            when (it) {
+                is UiState.Loading -> {
+                    Log.d("UiState", "로딩")
+                }
+                is UiState.Empty -> {
+                    Log.d("UiState", "상태 무")
+                }
+                is UiState.Success -> {
+                    it.data.documents.forEach{
+                        setMapCenterPoint(lat = it.y.toDouble(), lon = it.x.toDouble(), name = it.place_name)
+                    }
+                    Log.d("UiState", "데이터받음")
+                }
+                is UiState.Error -> {
+                    Log.d("UiState", "에러 ${it.message}")
+                }
+            }
+        }
     }
 
     override fun initAfterBinding() {
 
     }
 
-    private fun setMapCenterPoint(lat: Double, lon: Double){
+    private fun setMapCenterPoint(lat: Double, lon: Double, name: String){
         mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(lat, lon), true)
 
         val marker = MapPOIItem()
         val mapPoint = MapPoint.mapPointWithGeoCoord(lat, lon)
         marker.apply {
-            itemName = "현재 위치"
+            itemName = name
             tag = 0
             setMapPoint(mapPoint)
             markerType = MapPOIItem.MarkerType.BluePin
@@ -113,8 +134,9 @@ class MapFragment : HiltBaseFragment<FragmentMapBinding, MapViewModel, NavArgs>(
                     binding.longitudeText.text = longitude.toString()
                     removeLocation() // 위치를 한번 받은 후 remove()
 
-                    viewModel.getSearchCategory(longitude, latitude)
-                    setMapCenterPoint(lat = latitude, lon = longitude)
+                    for(i in 1..3) { // 카카오 검색 갯수 45개 제한 (15 * 3)
+                        viewModel.getSearchCategory(longitude, latitude, i)
+                    }
                 }
             }
         }
@@ -136,7 +158,6 @@ class MapFragment : HiltBaseFragment<FragmentMapBinding, MapViewModel, NavArgs>(
             if (location != null) {
                 val latitude = location.latitude
                 val longitude = location.longitude
-                setMapCenterPoint(lat = latitude, lon = longitude)
             }
         }
         fusedLocationProviderClient.lastLocation.addOnFailureListener {

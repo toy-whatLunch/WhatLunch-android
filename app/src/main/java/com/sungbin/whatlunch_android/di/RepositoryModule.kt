@@ -1,6 +1,6 @@
 package com.sungbin.whatlunch_android.di
 
-import com.sungbin.whatlunch_android.network.api.KakaoLocalService
+import com.sungbin.whatlunch_android.network.api.KakaoSearchService
 import com.sungbin.whatlunch_android.network.api.NetworkService
 import com.sungbin.whatlunch_android.repository.SearchRepository
 import com.sungbin.whatlunch_android.repository.UserRepository
@@ -20,5 +20,5 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideSearchRepository(kakaoLocalService: KakaoLocalService) = SearchRepository(kakaoLocalService)
+    fun provideSearchRepository(kakaoLocalService: KakaoSearchService) = SearchRepository(kakaoLocalService)
 }

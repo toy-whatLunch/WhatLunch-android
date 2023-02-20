@@ -1,7 +1,7 @@
 package com.sungbin.whatlunch_android.di
 
 import com.sungbin.whatlunch_android.BuildConfig
-import com.sungbin.whatlunch_android.network.api.KakaoLocalService
+import com.sungbin.whatlunch_android.network.api.KakaoSearchService
 import com.sungbin.whatlunch_android.network.api.NetworkService
 import com.sungbin.whatlunch_android.network.interceptor.NetworkInterceptor
 import dagger.Module
@@ -23,6 +23,9 @@ object NetworkModule {
 
     @Qualifier
     annotation class Kakao
+
+    @Qualifier
+    annotation class Naver
 
     @Provides
     @Singleton
@@ -92,8 +95,8 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideKakaoService(@Kakao kakaoRetrofit: Retrofit): KakaoLocalService{
-        return kakaoRetrofit.create(KakaoLocalService::class.java)
+    fun provideKakaoService(@Kakao kakaoRetrofit: Retrofit): KakaoSearchService{
+        return kakaoRetrofit.create(KakaoSearchService::class.java)
     }
 
 }
