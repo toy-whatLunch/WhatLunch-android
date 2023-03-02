@@ -9,8 +9,13 @@ import javax.inject.Singleton
 class SearchRepository @Inject constructor(private val kakaoService: KakaoSearchService) :
     BaseRepository() {
 
-    suspend fun getSearchKeyword() {
+    suspend fun getSearchKeyword(query: String, lon: String, lat: String, page: Int?= 1): KakaoData? {
+        val result = call(
+            call = { kakaoService.getSearchKeyword(query = query, lon = lon, lat = lat, page = page) },
+            error = "http kakao search error"
+        )
 
+        return result
     }
 
     suspend fun getSearchCategory(lon: String, lat: String, page: Int?= 1): KakaoData? {

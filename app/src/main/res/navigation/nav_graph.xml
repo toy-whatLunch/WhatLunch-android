@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mapFragment">
+    app:startDestination="@id/randomLunchFragment">
 
     <fragment
         android:id="@+id/homeFragment"
@@ -39,5 +39,10 @@
         android:name="com.sungbin.whatlunch_android.ui.map.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
+    <fragment
+        android:id="@+id/randomLunchFragment"
+        android:name="com.sungbin.whatlunch_android.ui.random.RandomLunchFragment"
+        android:label="RandomLunchFragment"
+        tools:layout="@layout/fragment_random_lunch"/>
 
 </navigation>

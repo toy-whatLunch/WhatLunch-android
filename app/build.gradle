@@ -44,10 +44,10 @@ android {
         def BASE_URL = "BASE_URL"
 
         service{
-            buildConfigField "String", BASE_URL, '"http://192.168.10.107:5000/"'
+            buildConfigField "String", BASE_URL, '"https://what-lunch.com/"'
         }
         dev{
-            buildConfigField "String", BASE_URL, '"http://192.168.10.107:5000/"'
+            buildConfigField "String", BASE_URL, '"https://what-lunch.com/"'
         }
     }
 

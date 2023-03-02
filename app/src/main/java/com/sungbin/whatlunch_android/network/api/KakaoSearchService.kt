@@ -10,11 +10,13 @@ import retrofit2.http.Query
 interface KakaoSearchService {
     @GET("v2/local/search/keyword.json")
     suspend fun getSearchKeyword(
+        @Header("Authorization") key: String?= BuildConfig.kakao_api_key,
         @Query("query") query: String,
+        @Query("category_group_code") category: String?= "FD6",
         @Query("x") lon: String,
         @Query("y") lat: String,
         @Query("page") page: Int? = 1,
-        @Query("radius") radius: Int? = 20000,
+        @Query("radius") radius: Int? = 1000,
         @Query("size") size: Int? = 15)
     : Response<KakaoData>
 

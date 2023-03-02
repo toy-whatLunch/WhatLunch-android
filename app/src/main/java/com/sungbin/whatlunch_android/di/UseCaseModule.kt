@@ -34,5 +34,8 @@ object UseCaseModule {
 
     // kakao
     @Provides
+    fun provideGetSearchKeywordUseCase(repo: SearchRepository) = GetSearchKeywordUseCase(repo)
+
+    @Provides
     fun provideGetSearchCategoryUseCase(repo: SearchRepository) = GetSearchCategoryUseCase(repo)
 }
