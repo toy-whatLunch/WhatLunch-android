@@ -1,10 +1,15 @@
 package com.sungbin.whatlunch_android
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.messaging.FirebaseMessaging
@@ -28,14 +33,13 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>(){
     }
 
     override fun initView(saveInstanceState: Bundle?) {
-        // 뷰를 표시 할 프래그먼트 초기화
-        val host = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = host.findNavController()
 
+        setBottomNav()
         firebaseAuth = FirebaseAuth.getInstance()
 
         setPush()
 //        initPage(firebaseAuth.currentUser)
+
     }
 
     override fun initDataBinding() {
@@ -66,4 +70,59 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>(){
         }
         navController.setGraph(navGraph, null)
     }
+
+    private fun setBottomNav(){
+        // 뷰를 표시 할 프래그먼트 초기화
+        val host = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = host.findNavController()
+
+        binding.bottomNav.setupWithNavController(navController)
+        binding.bottomNav.setOnItemSelectedListener {
+            if (it.itemId != binding.bottomNav.selectedItemId) {
+                when (it.itemId) {
+                    R.id.homeFragment -> {}
+
+                    R.id.mapFragment -> {}
+
+                    R.id.randomLunchFragment -> {}
+
+                }
+
+                NavigationUI.onNavDestinationSelected(it, navController)
+            }
+
+            return@setOnItemSelectedListener true
+        }
+        navController.addOnDestinationChangedListener(CustomDestinationChangedListener())
+    }
+
+    /**
+     * 바텀 네비게이션 프래그먼트 이동 리스너 - 툴바 좌측/우측 버튼 표시 설정
+     */
+    private inner class CustomDestinationChangedListener :
+        NavController.OnDestinationChangedListener {
+        override fun onDestinationChanged(
+            controller: NavController,
+            destination: NavDestination,
+            arguments: Bundle?,
+        ) {
+            // 뷰 바텀 레이아웃 visibility 설정
+            setBottomLayoutVisibility(destination.id)
+        }
+    }
+
+    /**
+     * 뷰 바텀 레이아웃 visibility 설정
+     */
+    private fun setBottomLayoutVisibility(destinationId: Int) {
+        when (destinationId) {
+            R.id.loginFragment -> {
+                binding.bottomNav.visibility = View.GONE
+            }
+            else -> {
+                binding.bottomNav.visibility = View.VISIBLE
+            }
+        }
+    }
+
 }

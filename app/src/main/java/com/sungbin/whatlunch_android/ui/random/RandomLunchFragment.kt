@@ -66,7 +66,6 @@ class RandomLunchFragment : HiltBaseFragment<FragmentRandomLunchBinding, MapView
                     count ++
 
                     if(count == 3){
-                        Log.d(LOG_TAG, "List ${lunchList.random()}")
                         binding.resultTv.text = lunchList.random().toString()
                     }
 
