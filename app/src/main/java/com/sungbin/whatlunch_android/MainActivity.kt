@@ -38,7 +38,7 @@ class MainActivity : HiltBaseActivity<ActivityMainBinding, MainViewModel>(){
         firebaseAuth = FirebaseAuth.getInstance()
 
         setPush()
-//        initPage(firebaseAuth.currentUser)
+        initPage(firebaseAuth.currentUser)
 
     }
 
